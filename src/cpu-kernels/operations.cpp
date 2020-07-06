@@ -3250,33 +3250,39 @@ void awkward_ListArray_combinations_step(
   int64_t stop,
   int64_t n,
   bool replacement) {
-  while (fromindex[j] < stop) {
+  for (int64_t i=j; i<n; i++) {
     if (replacement) {
-      for (int64_t k = j + 1;  k < n;  k++) {
-        fromindex[k] = fromindex[j];
+      for (int64_t k=j+1; k<n; k++) {
+        fromindex[k] = fromindex[i];
       }
     }
     else {
-      for (int64_t k = j + 1;  k < n;  k++) {
-        fromindex[k] = fromindex[j] + (k - j);
+      for (int64_t k=j+1; k<n; k++) {
+        fromindex[k] = fromindex[i]+k - i;
       }
     }
-    if (j + 1 == n) {
-      for (int64_t k = 0;  k < n;  k++) {
+    if ((i+1) == n) {
+      for (int64_t k=0; k<n; k++) {
         tocarry[k][toindex[k]] = fromindex[k];
         toindex[k]++;
       }
     }
-    else {
-      awkward_ListArray_combinations_step<T>(tocarry,
-                                             toindex,
-                                             fromindex,
-                                             j + 1,
-                                             stop,
-                                             n,
-                                             replacement);
+    fromindex[i]++;
+  }
+  for (int64_t i=n-1; i<(j-1); i--) {
+    while (fromindex[i] < stop) {
+      if (replacement) {
+        for (int64_t k=j+1; k<n; k++) {
+          fromindex[k] = fromindex[i];
+        }
+      }
+      else {
+        for (int64_t k = j+1; k<n; k++) {
+          fromindex[k] = fromindex[i] + k - i;
+        }
+      }
     }
-    fromindex[j]++;
+    fromindex[i]++;
   }
 }
 
